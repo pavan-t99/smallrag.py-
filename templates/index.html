@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayushman Bharat – PM-JAY Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@0;1&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #fafaf8;
+      color: #2c2c2c;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3d3d3a 0%, #2c2c2c 100%);
+      color: #fafaf8;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      border-bottom: 3px solid #d4af37;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .header h1 {
+      font-family: 'Crimson Text', serif;
+      font-size: 2.8rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .header .tagline {
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 0.8rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      font-size: 1rem;
+      opacity: 0.85;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 3px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 1rem 1.5rem;
+      border-radius: 2px;
+      line-height: 1.6;
+      word-wrap: break-word;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #3d3d3a;
+      color: #fafaf8;
+      border-left: 3px solid #d4af37;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #f0ebe0;
+      color: #2c2c2c;
+      border-left: 3px solid #3d3d3a;
+    }
+
+    .message.system {
+      align-self: center;
+      background: #fce8e6;
+      color: #8b3a3a;
+      font-size: 0.9rem;
+      padding: 0.9rem 1.4rem;
+      max-width: 85%;
+      text-align: center;
+      border-left: 3px solid #8b3a3a;
+    }
+
+    .timestamp {
+      font-size: 0.75rem;
+      opacity: 0.6;
+      margin-top: 0.6rem;
+      text-align: right;
+      font-weight: 300;
+    }
+
+    .typing {
+      align-self: flex-start;
+      background: #f0ebe0;
+      color: #666;
+      padding: 1rem 1.5rem;
+      border-radius: 2px;
+      border-left: 3px solid #3d3d3a;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: #3d3d3a;
+      border-radius: 50%;
+      animation: dot-bounce 1.4s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot-bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+    }
+
+    .input-area {
+      padding: 1.5rem 2rem;
+      background: #f5f3f0;
+      border-top: 1px solid #e8e0d8;
+    }
+
+    .form-wrapper {
+      display: flex;
+      gap: 0.8rem;
+      max-width: 100%;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      border: 1px solid #d4c5b8;
+      border-radius: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 1rem;
+      background: white;
+      color: #2c2c2c;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    #user-input:focus {
+      border-color: #d4af37;
+      box-shadow: inset 0 0 0 1px #d4af37;
+    }
+
+    #user-input::placeholder {
+      color: #999;
+      font-weight: 300;
+    }
+
+    button[type="submit"] {
+      background: #3d3d3a;
+      color: #d4af37;
+      border: 1px solid #3d3d3a;
+      padding: 1rem 1.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    button[type="submit"]:hover {
+      background: #d4af37;
+      color: #3d3d3a;
+    }
+
+    button[type="submit"]:active {
+      transform: scale(0.98);
+    }
+
+    .send-icon {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    button[type="submit"]:hover .send-icon {
+      transform: translateX(2px);
+    }
+
+    /* Message formatting */
+    .message.bot strong { font-weight: 600; }
+    .message.bot em { font-style: italic; }
+    .message.bot ul {
+      margin: 0.8rem 0 0.8rem 2rem;
+      padding-left: 0;
+      list-style-type: disc;
+    }
+    .message.bot li + li { margin-top: 0.5rem; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 1.8rem 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+      }
+
+      .chat-container {
+        padding: 1.2rem;
+      }
+
+      .message {
+        max-width: 88%;
+        padding: 0.9rem 1.2rem;
+      }
+
+      .input-area {
+        padding: 1.2rem 1.5rem;
+      }
+
+      .form-wrapper {
+        gap: 0.6rem;
+      }
+
+      button[type="submit"] {
+        padding: 0.9rem 1.4rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <!-- <script src="/_sdk/data_sdk.js" type="text/javascript"></script> -->
+  <!-- <script src="/_sdk/element_sdk.js" type="text/javascript"></script> -->
+ </head>
+ <body>
+  <header class="header">
+   <h1>Ayushman Bharat</h1>
+   <p class="tagline">PM-JAY Healthcare</p>
+   <p class="subtitle">Your guide to eligibility, benefits, hospitals &amp; claims</p>
+  </header>
+  <main class="chat-container" aria-live="polite">
+   <div class="messages" id="messages"></div>
+  </main>
+  <footer class="input-area">
+   <form id="chat-form" class="form-wrapper"> 
+    <input type="text" id="user-input" placeholder="Ask your question…" autocomplete="off" required aria-label="Type your message here"> <button type="submit" aria-label="Send message"> <span class="send-icon">→</span> </button>
+   </form>
+  </footer>
+  <script>
+    const API_URL = "https://scaling-capybara-pjq97vgxg5xvh6wrq-5000.app.github.dev/chat";
+    // const API_URL = "http://127.0.0.1:5000/chat";
+
+    const messagesDiv = document.getElementById("messages");
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("user-input");
+
+    let isTyping = false;
+
+    function getTimeString() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addMessage(text, type = "bot", isHtml = false) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", type);
+
+      if (isHtml) {
+        msg.innerHTML = text;
+      } else {
+        msg.textContent = text;
+      }
+
+      const time = document.createElement("div");
+      time.className = "timestamp";
+      time.textContent = getTimeString();
+      msg.appendChild(time);
+
+      messagesDiv.appendChild(msg);
+      scrollToBottom();
+      return msg;
+    }
+
+    function showTyping() {
+      if (isTyping) return;
+      isTyping = true;
+
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.innerHTML = `<span></span><span></span><span></span>`;
+      typing.id = "typing-indicator";
+      messagesDiv.appendChild(typing);
+      scrollToBottom();
+    }
+
+    function removeTyping() {
+      const el = document.getElementById("typing-indicator");
+      if (el) {
+        el.remove();
+        isTyping = false;
+      }
+    }
+
+    function scrollToBottom(smooth = true) {
+      messagesDiv.scrollTo({
+        top: messagesDiv.scrollHeight,
+        behavior: smooth ? "smooth" : "auto"
+      });
+    }
+
+    function simpleMarkdownToHtml(text) {
+      let html = text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+      if (html.includes('\n- ') || html.includes('\n* ')) {
+        html = html.replace(/^[-*]\s+(.+)$/gm, '<li>$1</li>');
+        if (html.includes('<li>')) {
+          html = '<ul>' + html + '</ul>';
+        }
+      }
+
+      return html;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+
+      input.value = "";
+      input.focus();
+
+      showTyping();
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        removeTyping();
+
+        if (!res.ok) throw new Error("Server error");
+
+        const data = await res.json();
+
+        if (data.error) {
+          addMessage("Sorry, an error occurred: " + data.error, "system");
+        } else if (data.response) {
+          const formatted = simpleMarkdownToHtml(data.response);
+          addMessage(formatted, "bot", true);
+        } else {
+          addMessage("No response received.", "system");
+        }
+      } catch (err) {
+        removeTyping();
+        addMessage("Sorry, could not connect to the server. Please try again later.", "system");
+      }
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      sendMessage();
+    });
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    window.addEventListener("load", () => {
+      addMessage(
+        "Namaste! How can I help you with Ayushman Bharat – PM-JAY today?",
+        "bot"
+      );
+      input.focus();
+      scrollToBottom(false);
+    });
+  </script>
+</html>

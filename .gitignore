@@ -1,0 +1,6 @@
+notebooks/data
+notebooks/cifar_net.pth
+.ipynb_checkpoints/
+/venv/*
+/.vscode/*
+/__pycache__/*
