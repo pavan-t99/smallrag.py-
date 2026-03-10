@@ -10,3 +10,5 @@ langchain-google-genai
 #langchain_groq
 flask
 google
+google-genai
+sentencepiece
