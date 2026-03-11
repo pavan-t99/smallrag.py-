@@ -2,7 +2,6 @@ import os
 import pickle
 import subprocess
 from req_res import Request, Response
-
 #import google.generativeai as genai
 from google import genai
 from langchain_community.vectorstores import FAISS
