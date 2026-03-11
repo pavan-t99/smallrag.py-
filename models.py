@@ -8,10 +8,21 @@ from google import genai
 from langchain_community.vectorstores import FAISS
 #from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from transformers import MarianMTModel, MarianTokenizer
-model_name = "Helsinki-NLP/opus-mt-en-te"
-tokenizer = MarianTokenizer.from_pretrained(model_name)
-model = MarianMTModel.from_pretrained(model_name) 
+translation_model = None
+translation_tokenizer = None
+
+def load_translation_model():
+    global translation_model, translation_tokenizer
+
+    if translation_model is None:
+        from transformers import MarianMTModel, MarianTokenizer
+
+        model_name = "Helsinki-NLP/opus-mt-en-te"
+
+        translation_tokenizer = MarianTokenizer.from_pretrained(model_name)
+        translation_model = MarianMTModel.from_pretrained(model_name)
+
+    return translation_tokenizer, translation_model 
 # ##
 
 # response = model.models.generate_content(
@@ -43,8 +54,8 @@ def embedding_model():
     )
   
 def eng_tel(text):
-    tokens = tokenizer(text, return_tensors="pt", padding=True)
-
+    tokenizer, model = load_translation_model()
+    tokens = tokenizer(text, return_tensors="pt", padding=True)                 
     translated = model.generate(**tokens)
     output = tokenizer.decode(translated[0], skip_special_tokens=True)
 
