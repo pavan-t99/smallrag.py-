@@ -5,3 +5,4 @@ notebooks/cifar_net.pth
 /.vscode/*
 /__pycache__/*
 .env
+.env

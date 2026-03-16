@@ -18,6 +18,7 @@ model = init_llm_model(API_KEY)
 INDEX_FILE = "./data/vector_store.pkl"
 
 server = Flask(__name__)
+server.secret_key = os.urandom(24)
 prompt = hub.pull("rlm/rag-prompt")
 
 
