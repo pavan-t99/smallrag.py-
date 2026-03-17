@@ -4,7 +4,7 @@ import traceback
 from flask import Flask, request, render_template, jsonify,session
 from langchain import hub
 from req_res import Request, Response
-from models import load_index, init_llm_model,eng_tel
+from models import load_index, init_llm_model,eng_hindi
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -37,7 +37,18 @@ def do_rag_generation(search_request: Request) -> Response:
         "context": final_context
     })
 
-    final_prompt = message.to_messages()[0].content
+    system_message = """
+    You are AI Assistant for helping users with registration in Ayushman Bharath.
+
+    Rules:
+    - Answer in simple English
+    - Give answers in bullet points
+    - Use short explanations
+    - Only use the provided context 
+    - If the answer is not in the context, say "I don't know"
+    - If a website link appears in the answer, format it as a clickable hyperlink using proper HTML or Markdown with target="_blank" rel="noopener noreferrer" so that users can opens in new tab the website when they click it.
+        """
+    final_prompt = system_message + "\n\n" + message.to_messages()[0].content
 
     # 3. Call Gemini correctly
     llm_response = model.models.generate_content(model="gemini-2.5-flash",contents=final_prompt)
@@ -74,7 +85,7 @@ def chat():
         session["chat_history"] = history[-8:]
         print("User Query:", query)
         print("Response:", response_obj.summary)
-        response_eng_tel=eng_tel(response_obj.summary)
+        response_eng_tel=eng_hindi(response_obj.summary)
         return jsonify({"response": response_eng_tel})
 
     except Exception as e:

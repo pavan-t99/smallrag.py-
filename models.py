@@ -16,7 +16,7 @@ def load_translation_model():
     if translation_model is None:
         from transformers import MarianMTModel, MarianTokenizer
 
-        model_name = "Helsinki-NLP/opus-mt-en-te"
+        model_name = "Helsinki-NLP/opus-mt-en-hi"
 
         translation_tokenizer = MarianTokenizer.from_pretrained(model_name)
         translation_model = MarianMTModel.from_pretrained(model_name)
@@ -52,7 +52,7 @@ def embedding_model():
         model_kwargs={"device": "cpu"}
     )
   
-def eng_tel(text):
+def eng_hindi(text):
     tokenizer, model = load_translation_model()
     tokens = tokenizer(text, return_tensors="pt", padding=True)                 
     translated = model.generate(**tokens)
