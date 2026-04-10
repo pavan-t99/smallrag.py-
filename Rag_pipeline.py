@@ -72,8 +72,8 @@ def do_rag_generation(search_request: Request,history) -> Response:
     final_prompt = system_message + "\n\n" + message.to_messages()[0].content
 
     # 3. Call Gemini correctly
-    llm_response = model.models.generate_content(model="gemini-2.5-flash",contents=final_prompt)
-
+    #llm_response = model.models.generate_content(model="gemini-2.5-flash",contents=final_prompt)
+    llm_response = model.generate_content(final_prompt)
     # 4. Build response
     response = Response(request=search_request)
     response.summary = getattr(llm_response, "text", str(llm_response))

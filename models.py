@@ -7,14 +7,22 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
+import google.generativeai as genai
+# def init_llm_model(api_key=None):
+#     if api_key is None:
+#             raise ValueError("API Key is required")
+
+#     client = genai.Client(api_key=api_key)
+#     return client
+
 
 def init_llm_model(api_key=None):
     if api_key is None:
-            raise ValueError("API Key is required")
+        raise ValueError("API Key is required")
 
-    client = genai.Client(api_key=api_key)
-    return client
-
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-pro")
+    return model
 def embedding_model():
     return HuggingFaceEmbeddings(
         model_name="all-MiniLM-L6-v2",#"all-mpnet-base-v2"
