@@ -2,7 +2,7 @@ import os
 import pickle
 import subprocess
 from req_res import Request, Response
-from google import genai
+#from google import genai
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
